@@ -1,6 +1,6 @@
 package com.eulerity.hackathon.imagefinder;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.IOException;
 
 import org.jsoup.Jsoup;
@@ -14,8 +14,8 @@ public class WebCrawler implements Runnable {
 	private int image_crawler_count = 0;
 	private Thread thread;
 	private String origin;
-	private ArrayList<String> accessed_nodes = new ArrayList<String>();
-	private ArrayList<String> crawled_images = new ArrayList<String>();
+	private CopyOnWriteArrayList<String> accessed_nodes = new CopyOnWriteArrayList<String>();
+	private CopyOnWriteArrayList<String> crawled_images = new CopyOnWriteArrayList<String>();
 	private static final int MAX_DEPTH = 5;
 
 	public WebCrawler(String url, int id) {
@@ -30,6 +30,10 @@ public class WebCrawler implements Runnable {
 		thread.start();
 	}
 	
+	public CopyOnWriteArrayList<String> getCrawledImages() {
+		return crawled_images;
+	}
+	
 	private void crawl(int currDepth, String url) {
 		if (currDepth < MAX_DEPTH) {
 			Document doc = request(url);
@@ -38,7 +42,7 @@ public class WebCrawler implements Runnable {
 				String next_link = link.absUrl("href");
 			
 				if (accessed_nodes.contains(next_link) == false) {
-					ImageCrawler iC = new ImageCrawler(doc, image_crawler_count++);
+					ImageCrawler iC = new ImageCrawler(doc, image_crawler_count++, crawled_images);
 					crawl(currDepth++, next_link);
 				}
 			}

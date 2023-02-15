@@ -1,6 +1,6 @@
 package com.eulerity.hackathon.imagefinder;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.IOException;
 
 import org.jsoup.Jsoup;
@@ -14,11 +14,13 @@ public class ImageCrawler implements Runnable {
 	private Thread thread;
 	private Document source;
 	private String title;
+	private CopyOnWriteArrayList<String> crawled_images;
 
-	public ImageCrawler(Document doc, int id) {
+	public ImageCrawler(Document doc, int id, CopyOnWriteArrayList<String> aList) {
 		source = doc;
 		title = source.title();
 		ID = id;
+		crawled_images = aList;
 		System.out.println("ImageCrawler with ID of " + ID + " and source of " + title + " created.");
 		deployThread();
 	}

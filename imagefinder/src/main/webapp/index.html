@@ -1,78 +1,129 @@
+<!DOCTYPE html>
 <html>
+
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+  <title>WebCrawler</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Ultra&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Library -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Boostrap Javascript -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/1c9ad4b785.js" crossorigin="anonymous"></script>
+
 </head>
+
 <body>
-	<h1>Eulerity Take-Home Challenge</h1>
 
-	<h2>How it works</h2>
-	<ul>
-		<li>Pressing the submit button on this page will make a POST
-			request to /main</li>
-		<li>That request will contain a form parameter with the url
-			populated in the input box below</li>
-		<li>The ImageFinder servlet will respond to the request with a
-			list of image urls</li>
-		<li>This page contains javascript to send the request and use the
-			response to build a list of images</li>
-	</ul>
-	<h2>Backend Developers</h2>
-	<ul>
-		<li>You can update the ImageFinder servlet to add crawling logic</li>
-		<li>Feel free to add as many classes/packages/files/third party
-			libraries as you'd like</li>
-		<li>We recommend JSoup for parsing web pages</li>
-		<li>You can update this page's html/css/style if you plan on
-			improving the interface</li>
-		<li>Your final submission does not need to contain any of the
-			files included herein</li>
-		<li>This project is just skeleton code so you can hit the ground
-			running.</li>
-		<li>Some ideas:
-			<ul>
-			<li>Crawl not only the given url, but other pages in the same domain</li>
-			<li>Make your crawler multithreaded to speed up response times</li>
-			<li>Be a friendly crawler and try not to hammer a site</li>
-			<li>Think about how to identify different classes of images and do they need special handling</li>
-			<li>Can you identify images as logos? Perhaps collect favicons?</li>
-			<li>Can you mark images that contain people?</li>
-			</ul>
-		</li>
-	</ul>
-	<h2>Important Notes</h2>
-	<p>Congratulations on making it this far into the interview
-		process!</p>
-	<p>
-	This is a free-form hackathon for a very important reason. We wish to see what ideas you can bring to the table.
-	</p>
-	<p><strong>If your submission only contains 5-10 lines of new code, please think twice about submitting it.</strong> If you need more time, you can ask for it.
-	</p>
-	<p>
-	You can use one of the ideas above, but feel free to go off and build something completely different. 
-	The important thing is to submit something that highlights your strengths as a developer.
-	</p>
-	<p>
-	  <b>Remember, this is your chance to show off how you can best contribute to our team.</b>
-	</p>
-	<p>Please remember to think about good design and code style. Comments in your code are great, but thought should also be taken in how to name your variables and method.</p>
+  <!-- Nav Bar -->
 
+  <section id="nav-section">
 
+    <nav class="navbar bg-dark navbar-dark navbar-expand-lg fixed-top">
+      <div id="navigation-bar" class="container-fluid">
+        <a class="navbar-brand" href="">WebCrawler</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="">Pricing Plans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="">Getting Started</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="">Input</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-	<div class="content">
-		<div class="input">
+  </section>
+
+  <!-- Get Started -->
+
+  <section id="get-started">
+
+    <div class="row container-fluid get-started-div">
+      <div class="get-started-module col-lg-4 center">
+		<i class="get-started-image fas fa-map-marker-alt fa-6x"></i>
+        <h3>Set an Origin</h3>
+        <p>Input a URL origin to start the automation!</p>
+      </div>
+
+      <div class="get-started-module col-lg-4 center">
+		<i class="get-started-image fas fa-spider fa-6x"></i>
+        <h3>Crawl the Web</h3>
+        <p>We create a spider that crawls the web for you!</p>
+      </div>
+
+      <div class="get-started-module col-lg-4 center">
+		<i class="get-started-image fas fa-images fa-6x"></i>
+        <h3>Scrape Some Images</h3>
+        <p>View any images she finds along the way!</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Input -->
+
+  <section id="input">
+
+    <div class="row container-fluid input-div">
+		<div class="input-module col-lg-6 center">
+			<h1>Where WebCrawling and ImageScraping meet!</h1>
+			<br>
+			<h3>Enter a URL to Get Started</h3>
 			<form>
-				<input type="text" name="url">
+				<div>
+					<input type="url" class="form-control" name="url">
+				</div>
+				<button type="submit" class="btn btn-dark btn-lg input-button submit"><i class="fa-solid fa-file-check"></i> Submit</button>
+				<button type="button" class="reset btn btn-dark input-button btn-lg"><i class="fa-solid fa-trash-can-undo"></i> Reset</button>
 			</form>
-			<button type="button">Submit!</button>
 		</div>
+		
 		<div class="output">
-			<ul class="results">
-
-			</ul>
+			<h2 id="image" style="display: none">Images</h2>
+			<ul class="results"></ul>
+			
+			<h2 id="logo" style="display: none">Logos</h2>
+			<ul class="results2"></ul>
 		</div>
-	</div>
-	<script>
+    </div>
+
+  </section>
+  
+  <!-- Footer -->
+
+  <footer id="footer">
+
+    <p class="center">Work of Joseph Re</p>
+
+  </footer>
+
+
+<script>
 		var resultList = document.querySelector('ul.results');
-		var urlInput = document.querySelector('input[name=url]')
+		var resultList2 = document.querySelector('ul.results2');
+		var urlInput = document.querySelector('input[name=url]');
+		var x= document.getElementById("image");
+		var y=document.getElementById("logo");
 
 		apiCallBack = function(xhr, callback) {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -82,6 +133,7 @@
 					alert(message);
 					throw 'API call returned bad code: ' + xhr.status;
 				}
+				console.log(xhr.responseText);
 				let response = xhr.responseText ? JSON.parse(xhr.responseText)
 						: null;
 				if (callback) {
@@ -92,12 +144,21 @@
 
 		updateList = function(response) {
 			resultList.innerHTML = '';
+			x.style.display="block";
+			y.style.display="block";
+
 			for (var i = 0; i < response.length; i++) {
-				var img = document.createElement("img");
-				img.width = 200;
-				img.src = response[i];
-				resultList.appendChild(img);
-			}
+				if(response[i]) {
+					var img = document.createElement("img");
+					img.width = 200;
+					img.src = response[i];
+					if(response[i].includes(".svg") || response[i].includes("favicon") ){
+						resultList2.appendChild(img);
+					}else {
+						resultList.appendChild(img);
+					}
+
+				}}
 		}
 
 		makeApiCall = function(url, method, obj, callback) {
@@ -107,11 +168,25 @@
 			xhr.send(obj ? obj instanceof FormData || obj.constructor == String ? obj : JSON.stringify(obj) : null);
 		}
 
-		document.querySelector('button').addEventListener("click", function(event) {
+		document.querySelector('.submit').addEventListener("click", function(event) {
 			event.preventDefault();
 			makeApiCall('/main?url=' + urlInput.value, 'POST', null, updateList);
 		});
+
+		document.querySelector('.reset').addEventListener("click",function(event){
+			event.preventDefault();
+			x.style.display="none";
+			y.style.display="none";
+			document.querySelector('ul.results').innerHTML='';
+			document.querySelector('ul.results2').innerHTML='';
+			makeApiCall('/main?url=' , 'DELETE', null, null)
+		})
+
 	</script>
+	<script src="webjars/jquery/1.9.1/jquery.min.js"/>
+	<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"/>
+
+
 </body>
 
 </html>

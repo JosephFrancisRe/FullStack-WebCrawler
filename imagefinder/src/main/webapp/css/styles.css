@@ -1,0 +1,110 @@
+/* Navigation Bar */
+
+.navbar-brand {
+  font-family: 'IM Fell DW Pica SC', serif;
+  font-size: 2.5rem;
+  color: #f2edd7;
+  padding-left: 2%;
+}
+
+.navbar-brand:hover {
+  font-family: 'IM Fell DW Pica SC', serif;
+  font-size: 2.5rem;
+  color: #fff;
+}
+
+.navbar-nav {
+  padding-right: 2%;
+}
+
+.nav-link {
+  font-family: 'IM Fell DW Pica SC', serif;
+  font-size: 2rem;
+  color: #f2edd7;
+}
+
+.nav-item {
+  padding-left: 22px;
+}
+
+.nav-link:hover {
+  font-family: 'IM Fell DW Pica SC', serif;
+  font-size: 2rem;
+  color: #fff;
+}
+
+/* Getting Started */
+
+.get-started-div {
+  padding: 0% 15%;
+  margin-top: 70px;
+  background-color: #e48257;
+}
+
+.get-started-module {
+  padding: 5%;
+}
+
+.get-started-image {
+  color: #3a6351;
+  margin: 35px 0;
+}
+
+.row {
+  --bs-gutter-x: 0;
+}
+
+/* Input */
+
+.input-div {
+  padding: 0% 15%;
+  background-color: #3a6351;
+}
+
+.input-module {
+  padding: 3%;
+}
+
+.input-button {
+  margin: 5% 3% 0% 0%;
+}
+
+/* Footer */
+
+#footer {
+  background-color: #212529;
+  padding: .5%;
+}
+
+/* General Tags */
+
+body {
+  font-family: 'ABeeZee', sans-serif;
+  background-color: #212529;
+}
+
+h1 {
+  font-family: 'Ultra', sans-serif;
+  color: #f2edd7;
+}
+
+h3 {
+  font-family: 'Ultra', sans-serif;
+}
+
+p {
+    color: #f2edd7;
+    margin: 0;
+}
+
+/* Special Tags */
+
+@-ms-viewport{
+    width: device-width;
+}
+
+.center {
+  float: none;
+  margin: auto;
+  text-align: center;
+}
