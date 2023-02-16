@@ -12,12 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @WebServlet(
     name = "ImageFinder",
@@ -44,7 +45,7 @@ public class ImageFinder extends HttpServlet{
 
 	@Override
 	protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ArrayList<Crawler> webCrawlers=new ArrayList<>();
+		ArrayList<Crawler> webCrawlers = new ArrayList<>();
 		String[] array;
 
 		resp.setContentType("text/json");

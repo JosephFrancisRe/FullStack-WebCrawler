@@ -1,1 +1,3 @@
 Please paste your list of test URLs below:
+http://books.toscrape.com/
+https://ashesofcreation.com/
