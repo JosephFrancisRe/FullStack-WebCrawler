@@ -36,7 +36,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto">
               <li class="nav-item">
-                <a class="nav-link" href="javascript:alert('Welcome to my Easter Egg!\n\nYou have earned the right to a free month of WebCrawler! And do us a favor, can you forget to unsubscribe for awhile?');">Pricing Plans</a>
+                <a class="nav-link" href="javascript:alert('Welcome to my Easter Egg!\n\nMarketer: Can’t we just use AI to manage our sales funnel for us?\n\nAlexa: I found four places that sell funnel cakes close to you.');">Pricing Plans</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#get-started">Getting Started</a>
@@ -102,11 +102,11 @@
 	<section id="output">
       <div class="output-div">
         <div class="row container-fluid output-module">
-          <h1 id="images" text-align="center" style="display: none">IMAGES</h1>
+          <h1 id="images" style="text-align:center">IMAGES</h1>
           <ul class="images"></ul>
         </div>
         <div class="row container-fluid output-module">
-          <h1 id="logos" text-align="center" style="display: none">LOGOS</h1>
+          <h1 id="logos" style="text-align:center">LOGOS</h1>
           <ul class="logos"></ul>
         </div>
       </div>
@@ -117,72 +117,9 @@
 	<footer id="footer">
       <p class="center">Joseph Re's Eulerity Hackathon Challenge Submission</p>
     </footer>
-    
-	<!-- JavaScript -->
 	
-	<script>
-      var imageList = document.querySelector('ul.images');
-      var logoList = document.querySelector('ul.logos');
-      var urlInput = document.querySelector('input[name=url]');
-      var imagesDoc = document.getElementById("images");
-      var logosDoc = document.getElementById("logos");
-      apiCallBack = function(xhr, callback) {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          if (xhr.status != 200) {
-            let message = xhr.status + ":" + xhr.statusText + ":" + xhr.responseText;
-            alert(message);
-            throw 'API call returned bad code: ' + xhr.status;
-          }
-          console.log(xhr.responseText);
-          let response = xhr.responseText ? JSON.parse(xhr.responseText) : null;
-          if (callback) {
-            callback(response);
-          }
-        }
-      }
-      updateList = function(response) {
-        imageList.innerHTML = '';
-        imagesDoc.style.display = "block";
-        logosDoc.style.display = "block";
-        for (var i = 0; i < response.length; i++) {
-          if (response[i]) {
-            var img = document.createElement("img");
-            img.width = 200;
-            img.src = response[i];
-            if (!response[i].includes(".svg") || !response[i].includes("favicon")) {
-              imageList.appendChild(img);
-            } else {
-              logoList.appendChild(img);
-            }
-          }
-        }
-      }
-      makeApiCall = function(url, method, obj, callback) {
-        let xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        xhr.onreadystatechange = apiCallBack.bind(null, xhr, callback);
-        xhr.send(obj ? obj instanceof FormData || obj.constructor == String ? obj : JSON.stringify(obj) : null);
-      }
-      document.querySelector('.lucky').addEventListener("click", function(event) {
-        event.preventDefault();
-        var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/'];
-        var randomIndex = Math.floor(Math.random() * verifiedSites.length);
-        document.getElementById('url').setAttribute('value', verifiedSites[randomIndex]);
-        makeApiCall('/main?url=' + verifiedSites[randomIndex], 'POST', null, updateList);
-      });
-      document.querySelector('.submit').addEventListener("click", function(event) {
-        event.preventDefault();
-        makeApiCall('/main?url=' + urlInput.value, 'POST', null, updateList);
-      });
-      document.querySelector('.reset').addEventListener("click", function(event) {
-        event.preventDefault();
-        imagesDoc.style.display = "none";
-        logosDoc.style.display = "none";
-        document.querySelector('ul.images').innerHTML = '';
-        document.querySelector('ul.logos').innerHTML = '';
-        makeApiCall('/main?url=', 'DELETE', null, null);
-      });
-    </script>
-	
+  <!-- Custom Javascript Import -->
+  <script src="updatelist.js"></script>
+
   </body>
 </html>
