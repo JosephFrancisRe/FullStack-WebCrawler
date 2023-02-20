@@ -18,7 +18,7 @@ apiCallBack = function(xhr, callback) {
     }
 }
 
-updateList = function(response) { 
+updateList = function(response) {
     imageList.innerHTML = '';
     var logoIdentifiers = ['.svg', 'logo', 'favicon'];
     for (var i = 0; i < response.length; i++) {
