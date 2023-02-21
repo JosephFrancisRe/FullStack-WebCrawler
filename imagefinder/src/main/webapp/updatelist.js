@@ -46,18 +46,24 @@ document.querySelector('.lucky').addEventListener("click", function(event) {
     event.preventDefault();
     var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/'];
     var randomIndex = Math.floor(Math.random() * verifiedSites.length);
-    document.getElementById('url').setAttribute('value', verifiedSites[randomIndex]);
+    document.getElementById('url').value = verifiedSites[randomIndex];
     makeApiCall('/main?url=' + verifiedSites[randomIndex], 'POST', null, updateList);
 });
 
 document.querySelector('.submit').addEventListener("click", function(event) {
     event.preventDefault();
-    makeApiCall('/main?url=' + urlInput.value, 'POST', null, updateList);
+    if (urlInput.value === '' || urlInput.value === 'Test Images Easter Egg') {
+        makeApiCall('/main?url=', 'POST', null, updateList);
+        document.getElementById('url').value = 'Test Images Easter Egg';
+    } else {
+        makeApiCall('/main?url=' + urlInput.value, 'POST', null, updateList);
+    }
 });
 
 document.querySelector('.reset').addEventListener("click", function(event) {
     event.preventDefault();
     document.querySelector('ul.images').innerHTML = '';
     document.querySelector('ul.logos').innerHTML = '';
+    document.getElementById('url').value = '';
     makeApiCall('/main?url=', 'DELETE', null, null);
 });

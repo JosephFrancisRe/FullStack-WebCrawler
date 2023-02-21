@@ -1,10 +1,17 @@
 package com.eulerity.hackathon.imagefinder;
 
 import java.io.IOException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+
+import java.util.Objects;
+import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,98 +34,162 @@ import com.google.gson.GsonBuilder;
 public class ImageFinder extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	protected static final Gson GSON = new GsonBuilder().create();
-	private CopyOnWriteArrayList imageList = new CopyOnWriteArrayList();
+	private static final Logger logger = Logger.getLogger(ImageFinder.class.getName());
+	private static Date timeStamp = new Date();
+	private static String domainName = "";
 
-	private HashSet<String> visitedLinks=new HashSet<>();
-	private String domain="";
+	private CopyOnWriteArrayList<Element> imageList = new CopyOnWriteArrayList<>();
+	private HashSet<String> visitedWebpages = new HashSet<>();
 
-
-
-	//This is just a test array
+	// This is just a test array
 	public static final String[] testImages = {
-			"https://images.pexels.com/photos/545063/pexels-photo-545063.jpeg?auto=compress&format=tiny",
-			"https://images.pexels.com/photos/464664/pexels-photo-464664.jpeg?auto=compress&format=tiny",
-			"https://images.pexels.com/photos/406014/pexels-photo-406014.jpeg?auto=compress&format=tiny",
-			"https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&format=tiny"
-  };
-
-
+		"https://images.pexels.com/photos/545063/pexels-photo-545063.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/464664/pexels-photo-464664.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/406014/pexels-photo-406014.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&format=tiny"
+	};
+	
+	/**
+	 * The Servlet post operation for HTTP POST requests.
+	 * 
+	 * This method crawls a URL scraping unique hyperlinks. For every unique hyperlink found, a
+	 * Crawler object is created to scrape all images from the webpage's programming interface
+	 * known as a Document Object Model (DOM). Once those images are scraped for all unique
+	 * hyperlinks with the same domain name as the original URL, a Json file is written to
+	 * inform the client's web browser of each image's URI so the WebCrawler's main page can be
+	 * populated.
+	 * 
+	 * @param	req					: The object containing the client's servlet request
+	 * @param	resp				: The object containing the servlet's response to the client
+	 * @throws	ServletException	: Signals a generalized servlet error per the web.xml config
+	 * @throws	IOException 		: Signals a failed or interrupted input/output operation
+	 */
 	@Override
 	protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ArrayList<Crawler> webCrawlers = new ArrayList<>();
-		String[] array;
-
 		resp.setContentType("text/json");
 		String path = req.getServletPath();
 		String url = req.getParameter("url");
-		System.out.println("Got request of:" + path + " with query param:" + url);
-		int id=0;
+		logger.info(timeStamp + ": Got request of: " + path + " with query param: " + url);
+		ArrayList<Crawler> webCrawlers = new ArrayList<>();
 
-		//check if url is null or empty string
-		if(Objects.nonNull(url) && !url.isEmpty()) {
-			try {
-				domain=getDomainName(url);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-            //clear link and image list from previous submission
-			visitedLinks.clear();imageList.clear();
-			//get all available link of the website
-			getPageLinks(url);
+		if (handleTestImages(url, resp)) { return; }
 
-
-			for(String link:visitedLinks){
-				webCrawlers.add(new Crawler(domain,link,imageList,id));
-				id++;
-			}
-
-			for(Crawler wc:webCrawlers){
-				try {
-					wc.getThread().join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			array=new String[imageList.size()];
-			imageList.toArray(array);
-
-		resp.getWriter().print(GSON.toJson(array));
-		}else {
-			resp.getWriter().print(GSON.toJson(testImages));
+		try {
+			domainName = extractDomain(url);
+		} catch (URISyntaxException e) {
+			logger.log(Level.SEVERE, timeStamp + ": An exception was thrown as the URI was not parsable for " + url +". Msg: ", e);
 		}
+
+		visitedWebpages = new HashSet<>();
+		imageList = new CopyOnWriteArrayList<>();
+		crawl(url);
+		deployWebCrawlers(visitedWebpages, webCrawlers, imageList);
+		resp.getWriter().print(GSON.toJson(imageList));
+		logger.info(timeStamp + ": Servlet response printed containing the images scraped from " + url + ".");
 	}
 
-
-	public void getPageLinks(String URL) {
-		//Check if you have already crawled the URLs
-		if (!visitedLinks.contains(URL)) {
-			try {
-				// If not add it to the index
-                visitedLinks.add(URL);
-				// Fetch the HTML code
-				Document document = Jsoup.connect(URL).get();
-				// Parse the HTML to extract links to other URLs
-				Elements linksOnPage = document.select("a[href*=https://"+domain+"]");
-				// get all links For each extracted URL
-				for (Element link : linksOnPage) {
-					getPageLinks(link.attr("abs:href"));
-				}
-			} catch (IOException e) {
-				System.err.println("For '" + URL + "': " + e.getMessage());
-			}
-		}
-	}
-
-	public static String getDomainName(String url) throws URISyntaxException {
-		URI uri = new URI(url);
-			String domain = uri.getHost();
-			return domain.startsWith("www.") ? domain.substring(4) : domain;
-	}
-
+	/**
+	 * The Servlet delete operation for HTTP DELETE requests.
+	 * 
+	 * This method simply constructs new empty objects to replace the previous values contained in
+	 * the variables visitedWebpages and imageList. Reassigning the variables to newly constructed
+	 * empty objects rather than calling the delete operations for HashSets and ArrayLists is a
+	 * faster operation in the average case scenario as there is no need to iterate through the
+	 * data structures removing each element.
+	 * 
+	 * @param	req					: The object containing the client's servlet request
+	 * @param	resp				: The object containing the servlet's response to the client
+	 * @throws	ServletException	: Signals a generalized servlet error per the web.xml config
+	 * @throws	IOException 		: Signals a failed or interrupted input/output operation
+	 */
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		System.out.println("clear");
-		visitedLinks.clear();
-		imageList.clear();
+		logger.info(timeStamp + ": Processing a delete operation.");
+		visitedWebpages = new HashSet<>();
+		imageList = new CopyOnWriteArrayList<>();
+		logger.info(timeStamp + ": Completed a delete operation.");
+	}
+
+	/**
+	 * Crawls all hyperlinks in a URL's document while their domains match.
+	 * 
+	 * @param	url			: A String value representing the desired domain's full URL
+	 * @throws	IOException	: Signals a failed or interrupted input/output operation
+	 */
+	public void crawl(String url) {
+		if (!visitedWebpages.contains(url)) {
+			try {
+                visitedWebpages.add(url);
+				Document document = Jsoup.connect(url).get();
+				Elements adjacentWebpages = document.select("a[href*=https://" + domainName + "]");
+				
+				for (Element webpage : adjacentWebpages) {
+					crawl(webpage.attr("abs:href"));
+				}
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, timeStamp + ": An exception was thrown when scraping " + url + ". Msg: ", e);
+			}
+		}
+	}
+
+	/**
+	 * Returns the domain name from a provided URL's hostname.
+	 * 
+	 * @param 	url					: A String value representing the desired domain's full URL
+	 * @return 	domainName			: A String value representing the URL's domain name
+	 * @throws 	URISyntaxException	: Indicates that the URL parameter was not parsable as a URI reference
+	 */
+	public static String extractDomain(String url) throws URISyntaxException {
+		URI uri = new URI(url);
+		String hostName = uri.getHost();
+		domainName = hostName;
+
+		if (Objects.nonNull(hostName)) {	
+			logger.info(timeStamp + ": Parsed a non-null hostname. Attempting to extract the domain name.");
+			domainName = hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+			return domainName;
+		}
+		return domainName;
+	}
+
+	/**
+	 * Process the test images if necessary, and returns whether the processing occurred.
+	 * 
+	 * @param 	url			: A String value representing the desired domain's full URL
+	 * @param	resp		: The object containing the servlet's response to the client
+	 * @return 	boolean		: Returns true if the requested URL is empty or null; otherwise, false
+	 * @throws 	IOException	: Signals a failed or interrupted input/output operation
+	 */
+	public static boolean handleTestImages(String url, HttpServletResponse resp) throws IOException {
+		if (url == null || url.isEmpty()) {
+			logger.info(timeStamp + ": Attempting to write a servlet response containing the test images.");
+			resp.getWriter().print(GSON.toJson(testImages));
+			logger.info(timeStamp + ": Servlet response printed containing the test images.");
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Creates and deploys objects on threads to scrape images for each webpage that was crawled to from the original URL.
+	 * 
+	 * @param 	visitedWebpages	: A HashSet containing every unique webpage accessible from the source URL that shares the domain name
+	 * @param 	webCrawlers		: An arraylist to hold the webCrawler objects that will eventually scrape images
+	 * @param	imageList		: A threadsafe arraylist to be populated with images scraped by the webCrawler objects
+	 */
+	public static void deployWebCrawlers(HashSet<String> visitedWebpages, ArrayList<Crawler> webCrawlers, CopyOnWriteArrayList<Element> imageList) {
+		int id = 1;
+
+		for (String webpage : visitedWebpages) {
+			webCrawlers.add(new Crawler(domainName, webpage, imageList, id++));
+		}
+
+		for (Crawler webCrawler : webCrawlers) {
+			try {
+				webCrawler.getThread().join();
+			} catch (InterruptedException e) {
+				logger.log(Level.SEVERE, timeStamp + ": An exception was thrown as an issue arose during the threading process. Msg: ", e);
+			}
+		}
 	}
 }
