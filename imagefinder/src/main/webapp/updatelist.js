@@ -20,13 +20,15 @@ apiCallBack = function(xhr, callback) {
 
 updateList = function(response) {
     imageList.innerHTML = '';
+    logoList.innerHTML = '';
     var logoIdentifiers = ['.svg', 'logo', 'favicon'];
     for (var i = 0; i < response.length; i++) {
         if (response[i]) {
             var img = document.createElement("img");
             img.width = 200;
             img.src = response[i];
-            if (!logoIdentifiers.some(v => response.includes(v))) {
+            console.log(response[i]);
+            if (!logoIdentifiers.some(v => img.src.includes(v))) {
                 imageList.appendChild(img);
             } else {
                 logoList.appendChild(img);
@@ -44,7 +46,7 @@ makeApiCall = function(url, method, obj, callback) {
 
 document.querySelector('.lucky').addEventListener("click", function(event) {
     event.preventDefault();
-    var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/'];
+    var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/', 'https://www.ultimateyankees.com/', 'https://www.spacejam.com/1996/'];
     var randomIndex = Math.floor(Math.random() * verifiedSites.length);
     document.getElementById('url').value = verifiedSites[randomIndex];
     makeApiCall('/main?url=' + verifiedSites[randomIndex], 'POST', null, updateList);

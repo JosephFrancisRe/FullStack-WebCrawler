@@ -52,11 +52,11 @@ public class ImageFinder extends HttpServlet{
 	/**
 	 * The Servlet post operation for HTTP POST requests.
 	 * 
-	 * This method crawls a URL scraping unique hyperlinks. For every unique hyperlink found, a
-	 * Crawler object is created to scrape all images from the webpage's programming interface
+	 * This method crawls a URL and scrapes unique hyperlinks. For every unique hyperlink found, an
+	 * imageScraper object is created to scrape all images from the webpage's programming interface
 	 * known as a Document Object Model (DOM). Once those images are scraped for all unique
 	 * hyperlinks with the same domain name as the original URL, a Json file is written to
-	 * inform the client's web browser of each image's URI so the WebCrawler's main page can be
+	 * inform the client's web browser of each image's URI so the imageScraper's main page can be
 	 * populated.
 	 * 
 	 * @param	req					: The object containing the client's servlet request
@@ -70,7 +70,7 @@ public class ImageFinder extends HttpServlet{
 		String path = req.getServletPath();
 		String url = req.getParameter("url");
 		logger.info(timeStamp + ": Got request of: " + path + " with query param: " + url);
-		ArrayList<Crawler> webCrawlers = new ArrayList<>();
+		ArrayList<imageScraper> imageScrapers = new ArrayList<>();
 
 		if (handleTestImages(url, resp)) { return; }
 
@@ -83,7 +83,7 @@ public class ImageFinder extends HttpServlet{
 		visitedWebpages = new HashSet<>();
 		imageList = new CopyOnWriteArrayList<>();
 		crawl(url);
-		deployWebCrawlers(visitedWebpages, webCrawlers, imageList);
+		deployimageScrapers(visitedWebpages, imageScrapers, imageList);
 		resp.getWriter().print(GSON.toJson(imageList));
 		logger.info(timeStamp + ": Servlet response printed containing the images scraped from " + url + ".");
 	}
@@ -174,19 +174,19 @@ public class ImageFinder extends HttpServlet{
 	 * Creates and deploys objects on threads to scrape images for each webpage that was crawled to from the original URL.
 	 * 
 	 * @param 	visitedWebpages	: A HashSet containing every unique webpage accessible from the source URL that shares the domain name
-	 * @param 	webCrawlers		: An arraylist to hold the webCrawler objects that will eventually scrape images
-	 * @param	imageList		: A threadsafe arraylist to be populated with images scraped by the webCrawler objects
+	 * @param 	imageScrapers	: An arraylist to hold the imageScraper objects that will eventually scrape images
+	 * @param	imageList		: A threadsafe arraylist to be populated with images scraped by the imageScraper objects
 	 */
-	public static void deployWebCrawlers(HashSet<String> visitedWebpages, ArrayList<Crawler> webCrawlers, CopyOnWriteArrayList<Element> imageList) {
+	public static void deployimageScrapers(HashSet<String> visitedWebpages, ArrayList<imageScraper> imageScrapers, CopyOnWriteArrayList<Element> imageList) {
 		int id = 1;
 
 		for (String webpage : visitedWebpages) {
-			webCrawlers.add(new Crawler(domainName, webpage, imageList, id++));
+			imageScrapers.add(new imageScraper(webpage, imageList, id++));
 		}
 
-		for (Crawler webCrawler : webCrawlers) {
+		for (imageScraper imageScraper : imageScrapers) {
 			try {
-				webCrawler.getThread().join();
+				imageScraper.getThread().join();
 			} catch (InterruptedException e) {
 				logger.log(Level.SEVERE, timeStamp + ": An exception was thrown as an issue arose during the threading process. Msg: ", e);
 			}
