@@ -156,29 +156,14 @@ public class ImageFinder extends HttpServlet{
 	}
 
 	/**
-	 * Returns the domain name from a provided URL's hostname.
+	 * This method randomizes between 3 and 5 time intervals for random scrolling actions to occur on the target URL.
+	 * Doing so mitigates the risk of the bot being IP banned for behaving in ways that are identifiably non-human
+	 * (i.e., actions such as instantaneous web surfing which would be likely to get classified as a bot program via
+	 * the target URL's machine learning classification models).
 	 * 
-	 * @param 	url					: A String value representing the desired domain's full URL
-	 * @return 	domainName			: A String value representing the URL's domain name
-	 * @throws 	URISyntaxException	: Indicates that the URL parameter was not parsable as a URI reference
+	 * @param	url						: A String value representing the desired domain's full URL
+	 * @throws	InterruptedException	: Signals that the thread was interrupted while sleeping
 	 */
-	public static String extractDomain(String url) throws URISyntaxException {
-		URI uri = new URI(url);
-		String hostName = uri.getHost();
-		domainName = hostName;
-
-		if (Objects.nonNull(hostName)) {	
-			LOGGER.log(Level.INFO, timeStamp + ": Parsed a non-null hostname. Attempting to extract the domain name.");
-			domainName = hostName.startsWith("www.") ? hostName.substring(4) : hostName;
-			return domainName;
-		}
-		return domainName;
-	}
-
-	public static long getRandomBoundedLong(long leftLimit, long rightLimit) {
-		return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
-	}
-
 	public static void simulateHumanScrolling(String url) throws InterruptedException {
 		WebDriverManager.chromedriver().setup();
 		WebDriver driver = new ChromeDriver();
@@ -200,6 +185,37 @@ public class ImageFinder extends HttpServlet{
 			TimeUnit.MILLISECONDS.sleep(getRandomBoundedLong(200L, 500L));
 			scrollDown = !scrollDown;
 		}
+	}
+
+	/**
+	 * Returns a random number as a long between two numbers.
+	 * 
+	 * @param 	leftLimit	: A long value representing the lower of two bounds for a random value
+	 * @param	rightLimit	: A long value representing the higher of two bounds for a random value
+	 * @return 	randomLong	: A long value that random falls between the two limit parameters
+	 */
+	public static long getRandomBoundedLong(long leftLimit, long rightLimit) {
+		return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+	}
+
+	/**
+	 * Returns the domain name from a provided URL's hostname.
+	 * 
+	 * @param 	url					: A String value representing the desired domain's full URL
+	 * @return 	domainName			: A String value representing the URL's domain name
+	 * @throws 	URISyntaxException	: Indicates that the URL parameter was not parsable as a URI reference
+	 */
+	public static String extractDomain(String url) throws URISyntaxException {
+		URI uri = new URI(url);
+		String hostName = uri.getHost();
+		domainName = hostName;
+
+		if (Objects.nonNull(hostName)) {	
+			LOGGER.log(Level.INFO, timeStamp + ": Parsed a non-null hostname. Attempting to extract the domain name.");
+			domainName = hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+			return domainName;
+		}
+		return domainName;
 	}
 
 	/**
