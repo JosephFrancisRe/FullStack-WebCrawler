@@ -46,7 +46,7 @@ makeApiCall = function(url, method, obj, callback) {
 
 document.querySelector('.lucky').addEventListener("click", function(event) {
     event.preventDefault();
-    var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/', 'https://www.ultimateyankees.com/', 'https://www.spacejam.com/1996/', 'https://mikemai.net/'];
+    var verifiedSites = ['http://books.toscrape.com/', 'https://ashesofcreation.com/', 'https://www.ultimateyankees.com/', 'https://www.spacejam.com/1996/'];
     var randomIndex = Math.floor(Math.random() * verifiedSites.length);
     document.getElementById('url').value = verifiedSites[randomIndex];
     makeApiCall('/main?url=' + verifiedSites[randomIndex], 'POST', null, updateList);
