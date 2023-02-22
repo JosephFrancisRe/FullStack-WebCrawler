@@ -6,9 +6,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
@@ -23,6 +25,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -118,10 +125,18 @@ public class ImageFinder extends HttpServlet{
 	}
 
 	/**
-	 * Crawls all hyperlinks in a URL's document while their domains match.
+	 * Crawls all hyperlinks in a URL's document while their domains match. This method is
+	 * semi-friendly for the target website in that the crawling actions are delayed by a
+	 * random duration of time between 1 and 2.5 seconds. This random delay both reduces
+	 * the strain that the ImageFinder's crawling process places on the target webserver,
+	 * while also reducing the chances that the bot is detected and therefore decreases the
+	 * likelihood of the local network being banned from communicating with the target
+	 * webserver in the future. Furthermore, the delay on webserver requests is also
+	 * accompanied by random webpage scrolling in order to make bot detection more challenging.
 	 * 
-	 * @param	url			: A String value representing the desired domain's full URL
-	 * @throws	IOException	: Signals a failed or interrupted input/output operation
+	 * @param	url						: A String value representing the desired domain's full URL
+	 * @throws	IOException				: Signals a failed or interrupted input/output operation
+	 * @throws	InterruptedException	: Signals that the thread was interrupted while sleeping
 	 */
 	public void crawl(String url) {
 		if (!visitedWebpages.contains(url)) {
@@ -131,9 +146,10 @@ public class ImageFinder extends HttpServlet{
 				Elements adjacentWebpages = document.select("a[href*=https://" + domainName + "]");
 				
 				for (Element webpage : adjacentWebpages) {
+					simulateHumanScrolling(url);
 					crawl(webpage.attr("abs:href"));
 				}
-			} catch (IOException e) {
+			} catch (IOException|InterruptedException e) {
 				LOGGER.log(Level.SEVERE, timeStamp + ": An IO exception was thrown when scraping " + url + ". Msg: ", e.getMessage());
 			}
 		}
@@ -157,6 +173,33 @@ public class ImageFinder extends HttpServlet{
 			return domainName;
 		}
 		return domainName;
+	}
+
+	public static long getRandomBoundedLong(long leftLimit, long rightLimit) {
+		return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+	}
+
+	public static void simulateHumanScrolling(String url) throws InterruptedException {
+		WebDriverManager.chromedriver().setup();
+		WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get(url);
+
+		Random rand = new Random();
+		int numOfActions = rand.nextInt(3) + 3;
+		boolean scrollDown = true;
+
+		TimeUnit.MILLISECONDS.sleep(getRandomBoundedLong(100L, 200L));
+		for (int i = 0; i < numOfActions; i++) {
+			JavascriptExecutor jse = (JavascriptExecutor) driver;
+			int scrollDistance = rand.nextInt(400);
+			if (!scrollDown) {
+				scrollDistance *= -1;
+			}
+			jse.executeScript("window.scrollBy(0," + scrollDistance + ")");
+			TimeUnit.MILLISECONDS.sleep(getRandomBoundedLong(200L, 500L));
+			scrollDown = !scrollDown;
+		}
 	}
 
 	/**

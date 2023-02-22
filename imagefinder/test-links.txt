@@ -1,3 +1,6 @@
 Please paste your list of test URLs below:
 http://books.toscrape.com/
 https://ashesofcreation.com/
+https://www.ultimateyankees.com/
+https://www.spacejam.com/1996/
+https://mikemai.net/
