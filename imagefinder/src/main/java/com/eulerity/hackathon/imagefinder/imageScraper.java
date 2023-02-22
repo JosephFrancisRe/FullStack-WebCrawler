@@ -3,6 +3,9 @@ package com.eulerity.hackathon.imagefinder;
 import java.io.IOException;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.Date;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -17,6 +20,8 @@ public class imageScraper implements Runnable {
     private String url;
     private CopyOnWriteArrayList imageList;
     private Thread thread;
+    private final Logger LOGGER;
+    private static Date timeStamp = new Date();
 
     /**
 	 * Constructor for a threaded image scraper object.
@@ -26,11 +31,11 @@ public class imageScraper implements Runnable {
      * @param   id          : An integer values representing the unique identifier for the object 
      * @throws 	IOException	: Signals a failed or interrupted input/output operation
 	 */
-    public imageScraper(String url, CopyOnWriteArrayList imageList, int id){
+    public imageScraper(String url, CopyOnWriteArrayList imageList, int id, Logger LOGGER){
         this.url = url;
         this.imageList = imageList;
-        System.out.println("ImageScraper with ID of " + id + " and source of " + url + " created.");
-
+        this.LOGGER = LOGGER;
+        LOGGER.log(Level.INFO, timeStamp + ": Servlet response printed containing the images scraped from " + url + ".");
         deployThread();
     }
 
@@ -50,7 +55,7 @@ public class imageScraper implements Runnable {
         try {
             extractImages();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, timeStamp + ": An IO exception was thrown when extracting images from " + url + ". Msg: ", e);
         }
     }
 

@@ -34,7 +34,7 @@ import com.google.gson.GsonBuilder;
 public class ImageFinder extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	protected static final Gson GSON = new GsonBuilder().create();
-	private static final Logger logger = Logger.getLogger(ImageFinder.class.getName());
+	private static final Logger LOGGER = WebCrawlerLogger.init();
 	private static Date timeStamp = new Date();
 	private static String domainName = "";
 
@@ -69,7 +69,7 @@ public class ImageFinder extends HttpServlet{
 		resp.setContentType("text/json");
 		String path = req.getServletPath();
 		String url = req.getParameter("url");
-		logger.info(timeStamp + ": Got request of: " + path + " with query param: " + url);
+		LOGGER.log(Level.INFO, timeStamp + ": Got request of: " + path + " with query param: " + url);
 		ArrayList<imageScraper> imageScrapers = new ArrayList<>();
 
 		if (handleTestImages(url, resp)) { return; }
@@ -77,7 +77,7 @@ public class ImageFinder extends HttpServlet{
 		try {
 			domainName = extractDomain(url);
 		} catch (URISyntaxException e) {
-			logger.log(Level.SEVERE, timeStamp + ": An exception was thrown as the URI was not parsable for " + url +". Msg: ", e);
+			LOGGER.log(Level.SEVERE, timeStamp + ": An exception was thrown as the URI was not parsable for " + url +". Msg: ", e.getMessage());
 		}
 
 		visitedWebpages = new HashSet<>();
@@ -85,7 +85,7 @@ public class ImageFinder extends HttpServlet{
 		crawl(url);
 		deployimageScrapers(visitedWebpages, imageScrapers, imageList);
 		resp.getWriter().print(GSON.toJson(imageList));
-		logger.info(timeStamp + ": Servlet response printed containing the images scraped from " + url + ".");
+		LOGGER.log(Level.INFO, timeStamp + ": Servlet response printed containing the images scraped from " + url + ".");
 	}
 
 	/**
@@ -104,10 +104,10 @@ public class ImageFinder extends HttpServlet{
 	 */
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		logger.info(timeStamp + ": Processing a delete operation.");
+		LOGGER.log(Level.INFO, timeStamp + ": Processing a delete operation.");
 		visitedWebpages = new HashSet<>();
 		imageList = new CopyOnWriteArrayList<>();
-		logger.info(timeStamp + ": Completed a delete operation.");
+		LOGGER.log(Level.INFO, timeStamp + ": Completed a delete operation.");
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class ImageFinder extends HttpServlet{
 					crawl(webpage.attr("abs:href"));
 				}
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, timeStamp + ": An exception was thrown when scraping " + url + ". Msg: ", e);
+				LOGGER.log(Level.SEVERE, timeStamp + ": An IO exception was thrown when scraping " + url + ". Msg: ", e.getMessage());
 			}
 		}
 	}
@@ -145,7 +145,7 @@ public class ImageFinder extends HttpServlet{
 		domainName = hostName;
 
 		if (Objects.nonNull(hostName)) {	
-			logger.info(timeStamp + ": Parsed a non-null hostname. Attempting to extract the domain name.");
+			LOGGER.log(Level.INFO, timeStamp + ": Parsed a non-null hostname. Attempting to extract the domain name.");
 			domainName = hostName.startsWith("www.") ? hostName.substring(4) : hostName;
 			return domainName;
 		}
@@ -162,9 +162,9 @@ public class ImageFinder extends HttpServlet{
 	 */
 	public static boolean handleTestImages(String url, HttpServletResponse resp) throws IOException {
 		if (url == null || url.isEmpty()) {
-			logger.info(timeStamp + ": Attempting to write a servlet response containing the test images.");
+			LOGGER.log(Level.INFO, timeStamp + ": Attempting to write a servlet response containing the test images.");
 			resp.getWriter().print(GSON.toJson(testImages));
-			logger.info(timeStamp + ": Servlet response printed containing the test images.");
+			LOGGER.log(Level.INFO, timeStamp + ": Servlet response printed containing the test images.");
 			return true;
 		}
 		return false;
@@ -181,14 +181,14 @@ public class ImageFinder extends HttpServlet{
 		int id = 1;
 
 		for (String webpage : visitedWebpages) {
-			imageScrapers.add(new imageScraper(webpage, imageList, id++));
+			imageScrapers.add(new imageScraper(webpage, imageList, id++, LOGGER));
 		}
 
 		for (imageScraper imageScraper : imageScrapers) {
 			try {
 				imageScraper.getThread().join();
 			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, timeStamp + ": An exception was thrown as an issue arose during the threading process. Msg: ", e);
+				LOGGER.log(Level.SEVERE, timeStamp + ": An exception was thrown as an issue arose during the threading process. Msg: ", e.getMessage());
 			}
 		}
 	}
