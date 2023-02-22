@@ -28,7 +28,8 @@ public class imageScraper implements Runnable {
 	 * 
      * @param 	url     	: A String value representing the desired domain's full URL
      * @param 	imageList	: A threadsafe ArrayList meant to store references to all unique images scraped
-     * @param   id          : An integer values representing the unique identifier for the object 
+     * @param   id          : An integer values representing the unique identifier for the object
+     * @param   LOGGER      : A logger object that facilitates the persistent storage of logging information
      * @throws 	IOException	: Signals a failed or interrupted input/output operation
 	 */
     public imageScraper(String url, CopyOnWriteArrayList imageList, int id, Logger LOGGER){

@@ -27,6 +27,13 @@ import org.jsoup.select.Elements;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * The class ImageFinder is a multi-purpose utility class: Firstly, it facilitates the communication between the
+ * client and server by creating Servlet operations to handle HTTP requests. Secondly, it interprets a URL's content
+ * in order to crawl from an origin URL through all of the possible hyperlinks of the same domain. Thirdly, for
+ * every unique webpage identified, the class instantiates a threaded object to scrape images that will ultimately
+ * be classified as either an image or a logo by the updatelist.js file and displayed on index.html.
+ */
 @WebServlet(
     name = "ImageFinder",
     urlPatterns = {"/main"}
