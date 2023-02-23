@@ -14,9 +14,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Initializes and starts a thread.
+ * The class ImageScraper is used to instantiate and object that uses JSoup to scrape the images from a webpage
+ * and store it to be displayed via javascript. The class is threaded and thus uses a threadsafe array list for
+ * storing references to images. Images are defined as having URIs that contain .ico, .png, .jpeg, .jpg, or .gif.
  */
-public class imageScraper implements Runnable {
+public class ImageScraper implements Runnable {
     private String url;
     private CopyOnWriteArrayList imageList;
     private Thread thread;
@@ -32,7 +34,7 @@ public class imageScraper implements Runnable {
      * @param   LOGGER      : A logger object that facilitates the persistent storage of logging information
      * @throws 	IOException	: Signals a failed or interrupted input/output operation
 	 */
-    public imageScraper(String url, CopyOnWriteArrayList imageList, int id, Logger LOGGER){
+    public ImageScraper(String url, CopyOnWriteArrayList imageList, int id, Logger LOGGER){
         this.url = url;
         this.imageList = imageList;
         this.LOGGER = LOGGER;
