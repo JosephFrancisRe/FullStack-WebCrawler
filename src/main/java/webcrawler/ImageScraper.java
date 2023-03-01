@@ -1,4 +1,4 @@
-package com.eulerity.hackathon.imagefinder;
+package webcrawler;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.eulerity.hackathon.imagefinder;
+package webcrawler;
 
 import java.util.logging.FileHandler;
 import java.util.logging.Level;

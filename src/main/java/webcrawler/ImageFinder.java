@@ -1,4 +1,4 @@
-package com.eulerity.hackathon.imagefinder;
+package webcrawler;
 
 import java.io.IOException;
 
@@ -55,12 +55,12 @@ public class ImageFinder extends HttpServlet{
 	private CopyOnWriteArrayList<Element> imageList = new CopyOnWriteArrayList<>();
 	private HashSet<String> visitedWebpages = new HashSet<>();
 
-	// This is just a test array
+	// This is the array to be used by Maven in my test case.
 	public static final String[] testImages = {
-		"https://images.pexels.com/photos/545063/pexels-photo-545063.jpeg?auto=compress&format=tiny",
-		"https://images.pexels.com/photos/464664/pexels-photo-464664.jpeg?auto=compress&format=tiny",
-		"https://images.pexels.com/photos/406014/pexels-photo-406014.jpeg?auto=compress&format=tiny",
-		"https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&format=tiny"
+		"https://images.pexels.com/photos/1308713/pexels-photo-1308713.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/7238892/pexels-photo-7238892.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/163487/baseball-player-pitcher-ball-163487.jpeg?auto=compress&format=tiny",
+		"https://images.pexels.com/photos/269948/pexels-photo-269948.jpeg?auto=compress&format=tiny"
 	};
 	
 	/**
